@@ -19,7 +19,7 @@ Een routeplanner in de stijl van Strava: klik punten aan op de kaart, de route v
 
 Je hebt geen server, installatie of API-sleutel nodig. Open gewoon `index.html` in je browser.
 
-Werkt dat niet goed (sommige browsers zijn streng met lokale bestanden), start dan een klein webservertje in deze map:
+Werkt dat niet goed, start dan een klein webservertje in deze map (op Windows: `py -m http.server 8000`):
 
 ```bash
 python3 -m http.server 8000
@@ -51,7 +51,7 @@ Op de gsm is het menu standaard ingeklapt zodat de kaart groot is. Tik op de ora
 
 Gebruikte gratis diensten:
 
-- [Leaflet](https://leafletjs.com) en [OpenStreetMap](https://www.openstreetmap.org) voor de kaart
+- [Leaflet](https://leafletjs.com) (meegeleverd in `vendor/leaflet`) met kaarten van [OpenStreetMap](https://www.openstreetmap.org) en [CARTO](https://carto.com)
 - [BRouter](https://brouter.de) voor de routes (inclusief hoogtes)
 - [Open-Meteo](https://open-meteo.com) voor hoogtes in de modus "rechte lijn"
 - [Nominatim](https://nominatim.org) om plaatsen te zoeken

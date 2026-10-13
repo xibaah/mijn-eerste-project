@@ -22,7 +22,15 @@
 
   // ---------- Kaart ----------
   const baseLayers = {
-    Kaart: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // CARTO werkt ook als je index.html rechtstreeks opent (file://);
+    // de tegelserver van OpenStreetMap weigert dat.
+    Kaart: L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      maxZoom: 20,
+      subdomains: 'abcd',
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    }),
+    OpenStreetMap: L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }),
@@ -41,6 +49,23 @@
   };
 
   const map = L.map('map', { zoomControl: false, layers: [baseLayers.Kaart] }).setView([51.0, 4.4], 9);
+
+  // Laadt een kaartlaag niet (geblokkeerd, server plat), schakel dan over op de volgende.
+  const layerOrder = Object.values(baseLayers);
+  layerOrder.forEach((layer, i) => {
+    let loaded = 0;
+    let failed = 0;
+    layer.on('tileload', () => loaded++);
+    layer.on('tileerror', () => {
+      failed++;
+      if (loaded === 0 && failed === 4 && map.hasLayer(layer)) {
+        const next = layerOrder[(i + 1) % layerOrder.length];
+        map.removeLayer(layer);
+        map.addLayer(next);
+        setStatus('Deze kaartlaag laadt niet; er is overgeschakeld naar een andere kaart.', 'error');
+      }
+    });
+  });
   L.control.zoom({ position: 'topright' }).addTo(map);
   L.control.layers(baseLayers, null, { position: 'topright' }).addTo(map);
   L.control.scale({ imperial: false }).addTo(map);
