@@ -63,4 +63,4 @@ Gebruikte gratis diensten:
 
 Hoogtemeters worden berekend met een drempel van 4 m, zodat kleine schommelingen in de hoogtedata niet meetellen. Daardoor kan het resultaat licht verschillen van Strava of Komoot.
 
-Google Maps berekent zelf een route langs maximaal 11 van je punten. Die route kan dus iets afwijken van wat je hier tekende; voor navigatie gebruik je best het GPX-bestand.
+Google Maps aanvaardt in een link maximaal 11 punten (start, einde en 9 tussenpunten). De app kiest daarom 11 punten op gelijke afstand langs de berekende route, zodat Google die zo goed mogelijk volgt. Tussen die punten kiest Google zelf de weg, dus kleine afwijkingen blijven mogelijk; voor navigatie gebruik je best het GPX-bestand. In de app zelf en in het GPX-bestand is er geen limiet.

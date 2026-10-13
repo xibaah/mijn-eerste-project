@@ -120,20 +120,27 @@
     });
   }
 
-  // Kies `count` punten gelijkmatig verdeeld uit een lijst (eerste en laatste blijven).
-  function sample(list, count) {
-    if (list.length <= count) return list.slice();
-    const out = [];
-    for (let i = 0; i < count; i++) {
-      out.push(list[Math.round((i * (list.length - 1)) / (count - 1))]);
+  // Kies `count` punten op gelijke afstand van elkaar langs een lijn (eerste en laatste blijven).
+  function sampleByDistance(points, count) {
+    if (points.length <= count) return points.slice();
+    const dist = cumulativeDistances(points);
+    const total = dist[dist.length - 1];
+    const out = [points[0]];
+    let j = 0;
+    for (let i = 1; i < count - 1; i++) {
+      const target = (i * total) / (count - 1);
+      while (j < dist.length - 1 && dist[j] < target) j++;
+      out.push(points[j]);
     }
+    out.push(points[points.length - 1]);
     return out;
   }
 
-  // Google Maps-routelink. Google laat max. 9 tussenpunten toe in een URL.
-  function googleMapsUrl(points, travelmode = 'bicycling') {
-    if (points.length < 2) return null;
-    const pts = sample(points, 11);
+  // Google Maps-routelink. Google laat max. 9 tussenpunten toe in een URL, dus we kiezen
+  // 11 punten op gelijke afstand langs de berekende route zodat Google die zo goed mogelijk volgt.
+  function googleMapsUrl(track, travelmode = 'bicycling') {
+    if (track.length < 2) return null;
+    const pts = sampleByDistance(track, 11);
     const c = (p) => `${p.lat.toFixed(6)},${p.lng.toFixed(6)}`;
     const params = new URLSearchParams({
       api: '1',
@@ -153,7 +160,7 @@
     densify,
     toGpx,
     parseGpx,
-    sample,
+    sampleByDistance,
     googleMapsUrl,
   };
 

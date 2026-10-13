@@ -394,7 +394,7 @@
 
   // Openen in Google Maps
   $('btn-gmaps').addEventListener('click', () => {
-    const url = Geo.googleMapsUrl(state.waypoints, PROFILES[state.profile].google);
+    const url = Geo.googleMapsUrl(fullTrack(currentSegments()), PROFILES[state.profile].google);
     if (url) window.open(url, '_blank', 'noopener');
   });
 
