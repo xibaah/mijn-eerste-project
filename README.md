@@ -4,7 +4,7 @@ Een routeplanner in de stijl van Strava: klik punten aan op de kaart, de route v
 
 ## Functies
 
-- **Kaart** met vier lagen: gewone kaart, fietskaart, terrein en satelliet
+- **Kaart** met vijf lagen: gewone kaart, OpenStreetMap, fietskaart, terrein en satelliet
 - **Klikken = punt toevoegen**: de punten worden automatisch verbonden via wegen en paden
 - **Sport kiezen**: fiets, racefiets, MTB, wandelen, hardlopen of rechte lijn
 - **Afstand, stijgen, dalen en geschatte tijd** worden live berekend
@@ -51,7 +51,7 @@ Op de gsm is het menu standaard ingeklapt zodat de kaart groot is. Tik op de ora
 
 Gebruikte gratis diensten:
 
-- [Leaflet](https://leafletjs.com) (meegeleverd in `vendor/leaflet`) met kaarten van [OpenStreetMap](https://www.openstreetmap.org) en [CARTO](https://carto.com)
+- [Leaflet](https://leafletjs.com) (meegeleverd in `vendor/leaflet`) met kaarten van [OpenStreetMap](https://www.openstreetmap.org), [CyclOSM](https://www.cyclosm.org) en Esri
 - [BRouter](https://brouter.de) voor de routes (inclusief hoogtes)
 - [Open-Meteo](https://open-meteo.com) voor hoogtes in de modus "rechte lijn"
 - [Nominatim](https://nominatim.org) om plaatsen te zoeken

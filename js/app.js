@@ -21,15 +21,15 @@
   const MOBILE = () => window.matchMedia('(max-width: 760px)').matches;
 
   // ---------- Kaart ----------
+  const esri = (service, attribution) =>
+    L.tileLayer(`https://server.arcgisonline.com/ArcGIS/rest/services/${service}/MapServer/tile/{z}/{y}/{x}`, {
+      maxZoom: 19,
+      attribution: `Tiles &copy; Esri — ${attribution}`,
+    });
+
   const baseLayers = {
-    // CARTO werkt ook als je index.html rechtstreeks opent (file://);
-    // de tegelserver van OpenStreetMap weigert dat.
-    Kaart: L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      maxZoom: 20,
-      subdomains: 'abcd',
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    }),
+    // Esri-kaarten werken ook als je index.html rechtstreeks opent (file://).
+    Kaart: esri('World_Street_Map', 'Esri, HERE, Garmin, OpenStreetMap'),
     OpenStreetMap: L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -38,17 +38,15 @@
       maxZoom: 20,
       attribution: '<a href="https://www.cyclosm.org">CyclOSM</a> | &copy; OpenStreetMap',
     }),
-    Terrein: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-      maxZoom: 17,
-      attribution: '&copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA) | &copy; OpenStreetMap',
-    }),
-    Satelliet: L.tileLayer(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-      { maxZoom: 19, attribution: 'Tiles &copy; Esri' }
-    ),
+    Terrein: esri('World_Topo_Map', 'Esri, HERE, Garmin, USGS, OpenStreetMap'),
+    Satelliet: esri('World_Imagery', 'Esri, Maxar, Earthstar Geographics'),
   };
 
-  const map = L.map('map', { zoomControl: false, layers: [baseLayers.Kaart] }).setView([51.0, 4.4], 9);
+  // De tegelserver van OpenStreetMap weigert pagina's die als los bestand geopend zijn;
+  // via een echte website (bv. GitHub Pages) gebruiken we hem wel als standaard.
+  const startLayer = location.protocol === 'file:' ? baseLayers.Kaart : baseLayers.OpenStreetMap;
+
+  const map = L.map('map', { zoomControl: false, layers: [startLayer] }).setView([51.0, 4.4], 9);
 
   // Laadt een kaartlaag niet (geblokkeerd, server plat), schakel dan over op de volgende.
   const layerOrder = Object.values(baseLayers);
