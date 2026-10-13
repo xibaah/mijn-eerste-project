@@ -185,7 +185,7 @@
         icon: markerIcon(i, n),
         draggable: true,
         autoPan: true,
-        title: 'Sleep om te verplaatsen, klik om te verwijderen',
+        title: i === 0 && n > 1 ? 'Klik om de lus te sluiten, sleep om te verplaatsen' : 'Sleep om te verplaatsen, klik om te verwijderen',
         zIndexOffset: i === 0 || i === n - 1 ? 1000 : 0,
       });
       m.on('dragend', () => {
@@ -197,7 +197,9 @@
       m.on('click', (e) => {
         L.DomEvent.stopPropagation(e);
         snapshot();
-        state.waypoints.splice(i, 1);
+        // Klikken op het startpunt sluit de lus; elk ander punt wordt verwijderd.
+        if (i === 0 && state.waypoints.length > 1) state.waypoints.push({ ...state.waypoints[0] });
+        else state.waypoints.splice(i, 1);
         changed();
       });
       markerLayer.addLayer(m);

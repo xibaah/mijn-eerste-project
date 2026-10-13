@@ -9,6 +9,7 @@ Een routeplanner in de stijl van Strava: klik punten aan op de kaart, de route v
 - **Sport kiezen**: fiets, racefiets, MTB, wandelen, hardlopen of rechte lijn
 - **Afstand, stijgen, dalen en geschatte tijd** worden live berekend
 - **Hoogteprofiel**: beweeg erover om het punt op de kaart te zien
+- **Lus maken**: klik op het startpunt om de route terug naar de start te laten lopen
 - **Bewerken**: punten verslepen, op de route klikken om een tussenpunt toe te voegen, op een punt klikken om het te verwijderen, ongedaan maken (Ctrl+Z), omdraaien, terug naar start
 - **Exporteren**: GPX downloaden (met hoogtes, werkt met Garmin, Wahoo, Strava, Komoot, …) of openen in Google Maps
 - **GPX importeren** om een bestaande route te bekijken of aan te passen
@@ -17,9 +18,13 @@ Een routeplanner in de stijl van Strava: klik punten aan op de kaart, de route v
 
 ## Gebruiken
 
-Je hebt geen server, installatie of API-sleutel nodig. Open gewoon `index.html` in je browser.
+Je hebt geen installatie of API-sleutel nodig.
 
-Werkt dat niet goed, start dan een klein webservertje in deze map (op Windows: `py -m http.server 8000`):
+**Windows:** dubbelklik op **`Start Routeplanner.bat`**. Er opent een venster (laat dat open) en de app verschijnt in je browser. Toont Windows een blauwe waarschuwing, kies dan *Meer informatie → Toch uitvoeren*.
+
+Je kunt ook gewoon `index.html` openen, maar dan weigert OpenStreetMap zijn kaart en krijg je een kaart van Esri zonder kleine paadjes.
+
+**Mac/Linux:** start een klein webservertje in deze map:
 
 ```bash
 python3 -m http.server 8000
