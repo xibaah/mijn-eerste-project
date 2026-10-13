@@ -46,6 +46,14 @@
   // via een echte website (bv. GitHub Pages) gebruiken we hem wel als standaard.
   const startLayer = location.protocol === 'file:' ? baseLayers.Kaart : baseLayers.OpenStreetMap;
 
+  if (location.protocol === 'file:') {
+    $('file-warning').hidden = false;
+    $('file-warning-close').addEventListener('click', () => {
+      $('file-warning').hidden = true;
+      map.invalidateSize();
+    });
+  }
+
   const map = L.map('map', { zoomControl: false, layers: [startLayer] }).setView([51.0, 4.4], 9);
 
   // Laadt een kaartlaag niet (geblokkeerd, server plat), schakel dan over op de volgende.

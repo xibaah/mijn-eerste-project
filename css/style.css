@@ -222,6 +222,19 @@ h2 {
   box-shadow: 0 0 4px rgba(0, 0, 0, .5);
 }
 
+.file-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #fff4e5;
+  border-bottom: 1px solid #ffd8a8;
+  color: #7a3a00;
+  font-size: .85rem;
+}
+.file-warning[hidden] { display: none; }
+.file-warning .icon-btn { margin-left: auto; font-size: 1rem; }
+
 /* ---------- Hoogteprofiel ---------- */
 .elevation {
   position: relative;
