@@ -16,6 +16,9 @@
   const segments = new Map();
 
   const $ = (id) => document.getElementById(id);
+  // Op een touchscreen maken we de punten groter, zodat je ze makkelijk kunt verslepen.
+  const TOUCH = window.matchMedia('(pointer: coarse)').matches;
+  const MOBILE = () => window.matchMedia('(max-width: 760px)').matches;
 
   // ---------- Kaart ----------
   const baseLayers = {
@@ -141,7 +144,7 @@
     const isStart = i === 0;
     const isEnd = i === n - 1 && n > 1;
     const cls = isStart ? 'wp-start' : isEnd ? 'wp-end' : 'wp-mid';
-    const size = isStart || isEnd ? 22 : 16;
+    const size = (isStart || isEnd ? 22 : 16) + (TOUCH ? 8 : 0);
     const label = isStart ? 'A' : isEnd ? 'B' : '';
     return L.divIcon({
       className: '',
@@ -428,10 +431,15 @@
   });
 
   // Paneel in-/uitklappen op mobiel
-  $('toggle-panel').addEventListener('click', () => {
+  function togglePanel() {
     $('panel').classList.toggle('collapsed');
     setTimeout(() => map.invalidateSize(), 50);
+  }
+  $('panel-header').addEventListener('click', () => {
+    if (MOBILE()) togglePanel();
   });
+  // Op de gsm start het menu ingeklapt, zodat de kaart zo groot mogelijk is.
+  if (MOBILE()) $('panel').classList.add('collapsed');
 
   // ---------- Start ----------
   load();

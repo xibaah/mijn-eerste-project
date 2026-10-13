@@ -266,7 +266,10 @@ h2 {
   #panel.collapsed { max-height: none; overflow: hidden; }
   #panel.collapsed .panel-body { display: none; }
   #panel.collapsed #toggle-panel { transform: rotate(180deg); }
-  .panel-header { padding: 8px 16px; }
+  .panel-header { padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)); cursor: pointer; }
+  #panel:not(.collapsed) .panel-header { padding-bottom: 10px; }
+  .panel-body { padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px)); }
+  .btn { padding: 10px; }
   .mobile-only { display: inline-block; }
   #main { height: auto; flex: 1; min-height: 0; }
 }

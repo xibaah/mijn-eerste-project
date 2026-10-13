@@ -27,11 +27,16 @@ python3 -m http.server 8000
 
 en ga naar <http://localhost:8000>.
 
-### Online zetten met GitHub Pages
+### Op je gsm (via GitHub Pages)
 
-1. Ga op GitHub naar **Settings → Pages**.
-2. Kies bij *Source* de branch (bv. `main`) en de map `/ (root)`.
-3. Na een minuutje staat je app op `https://<gebruikersnaam>.github.io/mijn-eerste-project/`, ook op je gsm.
+GitHub Pages is gratis voor **publieke** repositories.
+
+1. Zet de repository publiek: **Settings → General → Danger Zone → Change visibility → Public**.
+2. Ga naar **Settings → Pages**, kies bij *Source* "Deploy from a branch", kies de branch met de app en de map `/ (root)` en klik op **Save**.
+3. Na een minuutje staat je app op `https://<gebruikersnaam>.github.io/mijn-eerste-project/`.
+4. Open die link op je gsm en kies **Zet op beginscherm** (iPhone: deel-knop in Safari; Android: menu ⋮ in Chrome). Je krijgt dan een app-icoon en de app opent schermvullend.
+
+Op de gsm is het menu standaard ingeklapt zodat de kaart groot is. Tik op de oranje balk onderaan om het open te klappen.
 
 ## Hoe het werkt
 
