@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Routeplanner</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <aside id="panel">
+    <header class="panel-header">
+      <h1>Routeplanner</h1>
+      <span id="header-summary" class="header-summary mobile-only"></span>
+      <button id="toggle-panel" class="icon-btn mobile-only" aria-label="Paneel in-/uitklappen">▾</button>
+    </header>
+
+    <div class="panel-body">
+      <form id="search-form" class="search">
+        <input id="search-input" type="search" placeholder="Zoek een plaats…" autocomplete="off">
+        <button type="submit" class="btn">Zoek</button>
+      </form>
+      <ul id="search-results" class="search-results" hidden></ul>
+
+      <section>
+        <h2>Sport</h2>
+        <div id="profiles" class="profiles" role="radiogroup"></div>
+      </section>
+
+      <section class="stats">
+        <div class="stat"><span class="stat-value" id="stat-distance">0,0</span><span class="stat-label">km</span></div>
+        <div class="stat"><span class="stat-value" id="stat-gain">0</span><span class="stat-label">m stijgen</span></div>
+        <div class="stat"><span class="stat-value" id="stat-loss">0</span><span class="stat-label">m dalen</span></div>
+        <div class="stat"><span class="stat-value" id="stat-time">0:00</span><span class="stat-label">geschatte tijd</span></div>
+      </section>
+      <p id="status" class="status" aria-live="polite">Klik op de kaart om je startpunt te kiezen.</p>
+
+      <section>
+        <h2>Route</h2>
+        <div class="btn-grid">
+          <button id="btn-undo" class="btn" title="Laatste wijziging ongedaan maken (Ctrl+Z)">↶ Ongedaan</button>
+          <button id="btn-reverse" class="btn">⇄ Omdraaien</button>
+          <button id="btn-loop" class="btn">↺ Terug naar start</button>
+          <button id="btn-clear" class="btn btn-danger">✕ Wissen</button>
+        </div>
+      </section>
+
+      <section>
+        <h2>Exporteren</h2>
+        <input id="route-name" class="text-input" type="text" value="Mijn route" aria-label="Naam van de route">
+        <div class="btn-grid">
+          <button id="btn-gpx" class="btn btn-primary">⬇ GPX downloaden</button>
+          <button id="btn-gmaps" class="btn btn-primary">Open in Google Maps</button>
+          <label class="btn file-btn">⬆ GPX importeren<input id="gpx-file" type="file" accept=".gpx,application/gpx+xml"></label>
+        </div>
+        <p class="hint">Google Maps berekent zelf een route langs maximaal 11 van je punten; die kan dus iets afwijken.</p>
+      </section>
+
+      <details class="help">
+        <summary>Hoe werkt het?</summary>
+        <ul>
+          <li><b>Klik</b> op de kaart om een punt toe te voegen; de route volgt automatisch wegen en paden.</li>
+          <li><b>Sleep</b> een punt om het te verplaatsen.</li>
+          <li><b>Klik op de route</b> om er een tussenpunt in te voegen.</li>
+          <li><b>Klik op een punt</b> om het te verwijderen.</li>
+          <li>Beweeg over het hoogteprofiel om de plek op de kaart te zien.</li>
+        </ul>
+      </details>
+      <p class="credits">Routes: <a href="https://brouter.de" target="_blank" rel="noopener">BRouter</a> · Hoogtes: <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> · Zoeken: <a href="https://nominatim.org" target="_blank" rel="noopener">Nominatim</a></p>
+    </div>
+  </aside>
+
+  <main id="main">
+    <div id="map"></div>
+    <div id="elevation" class="elevation" hidden>
+      <svg id="elevation-svg" preserveAspectRatio="none"></svg>
+      <div id="elevation-tooltip" class="elevation-tooltip" hidden></div>
+    </div>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/geo.js"></script>
+  <script src="js/routing.js"></script>
+  <script src="js/elevation.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
