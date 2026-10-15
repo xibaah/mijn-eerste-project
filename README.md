@@ -13,7 +13,9 @@ Een routeplanner in de stijl van Strava: klik punten aan op de kaart, de route v
 - **Bewerken**: punten verslepen, op de route klikken om een tussenpunt toe te voegen, op een punt klikken om het te verwijderen, ongedaan maken (Ctrl+Z), omdraaien, terug naar start
 - **Exporteren**: GPX downloaden (met hoogtes, werkt met Garmin, Wahoo, Strava, Komoot, …) of openen in Google Maps
 - **GPX importeren** om een bestaande route te bekijken of aan te passen
-- **Plaats zoeken** en **mijn locatie**
+- **Live locatie**: blauwe stip die je volgt terwijl je beweegt (werkt via GitHub Pages of `localhost`)
+- **Snelknoppen op de kaart**: ongedaan maken, lus sluiten en wissen zonder het menu te openen
+- **Plaats zoeken**
 - De route wordt automatisch bewaard in je browser
 
 ## Gebruiken

@@ -72,29 +72,130 @@
       }
     });
   });
-  L.control.zoom({ position: 'topright' }).addTo(map);
+  // Op een touchscreen zoom je met twee vingers; de knoppen nemen dan enkel plaats in.
+  if (!TOUCH) L.control.zoom({ position: 'topright' }).addTo(map);
   L.control.layers(baseLayers, null, { position: 'topright' }).addTo(map);
   L.control.scale({ imperial: false }).addTo(map);
+
+  // ---------- Live locatie ----------
+  // Uit → tik: volgen (kaart schuift mee) → kaart verslepen: alleen tonen → tik: weer volgen → tik: uit.
+  const gps = { watchId: null, follow: false, marker: null, circle: null, button: null };
+
+  function updateGpsButton() {
+    const b = gps.button;
+    if (!b) return;
+    b.classList.toggle('gps-on', gps.watchId != null);
+    b.classList.toggle('gps-follow', gps.follow);
+    b.title = gps.watchId == null ? 'Toon mijn live locatie' : gps.follow ? 'Stop live locatie' : 'Centreer op mijn locatie';
+  }
+
+  function stopGps() {
+    if (gps.watchId != null) navigator.geolocation.clearWatch(gps.watchId);
+    gps.watchId = null;
+    gps.follow = false;
+    if (gps.marker) gps.marker.remove();
+    if (gps.circle) gps.circle.remove();
+    gps.marker = gps.circle = null;
+    updateGpsButton();
+  }
+
+  function onPosition(pos) {
+    const ll = [pos.coords.latitude, pos.coords.longitude];
+    const acc = pos.coords.accuracy;
+    const first = !gps.marker;
+    if (first) {
+      gps.circle = L.circle(ll, { radius: acc, color: '#1a73e8', weight: 1, fillOpacity: 0.12, interactive: false }).addTo(map);
+      gps.marker = L.marker(ll, {
+        icon: L.divIcon({ className: '', html: '<div class="gps-dot"></div>', iconSize: [18, 18], iconAnchor: [9, 9] }),
+        interactive: false,
+        keyboard: false,
+        zIndexOffset: 2000,
+      }).addTo(map);
+    } else {
+      gps.marker.setLatLng(ll);
+      gps.circle.setLatLng(ll).setRadius(acc);
+    }
+    if (gps.follow) {
+      if (first) map.setView(ll, Math.max(map.getZoom(), 15));
+      else map.panTo(ll, { animate: true });
+    }
+  }
+
+  function onPositionError(err) {
+    if (err.code === 1) {
+      setStatus('Geen toestemming voor je locatie. Sta locatie toe in de instellingen van je browser.', 'error');
+      stopGps();
+      return;
+    }
+    // Tijdelijk geen signaal (tunnel, binnen, ...): blijf zoeken en toon de laatst bekende positie.
+    if (!gps.marker) setStatus('Je locatie wordt gezocht…', 'busy');
+  }
+
+  function toggleGps() {
+    if (!('geolocation' in navigator)) {
+      setStatus('Deze browser kan je locatie niet bepalen.', 'error');
+      return;
+    }
+    if (gps.watchId == null) {
+      gps.follow = true;
+      gps.watchId = navigator.geolocation.watchPosition(onPosition, onPositionError, {
+        enableHighAccuracy: true,
+        maximumAge: 5000,
+        timeout: 20000,
+      });
+    } else if (!gps.follow) {
+      gps.follow = true;
+      if (gps.marker) map.setView(gps.marker.getLatLng(), Math.max(map.getZoom(), 15));
+    } else {
+      stopGps();
+    }
+    updateGpsButton();
+  }
+
+  // Zelf de kaart verslepen = niet meer automatisch meeschuiven.
+  map.on('dragstart', () => {
+    if (gps.follow) {
+      gps.follow = false;
+      updateGpsButton();
+    }
+  });
 
   const LocateControl = L.Control.extend({
     options: { position: 'topright' },
     onAdd() {
       const div = L.DomUtil.create('div', 'leaflet-bar');
-      const a = L.DomUtil.create('a', '', div);
+      const a = L.DomUtil.create('a', 'gps-btn', div);
       a.href = '#';
-      a.title = 'Mijn locatie';
       a.setAttribute('role', 'button');
+      a.setAttribute('aria-label', 'Live locatie');
       a.innerHTML = '◎';
-      a.style.fontSize = '18px';
+      gps.button = a;
+      updateGpsButton();
+      L.DomEvent.disableClickPropagation(div);
       L.DomEvent.on(a, 'click', (e) => {
         L.DomEvent.stop(e);
-        map.locate({ setView: true, maxZoom: 14 });
+        toggleGps();
       });
       return div;
     },
   });
   new LocateControl().addTo(map);
-  map.on('locationerror', () => setStatus('Je locatie kon niet bepaald worden.', 'error'));
+
+  // ---------- Snelknoppen op de kaart ----------
+  const QuickControl = L.Control.extend({
+    options: { position: 'topleft' },
+    onAdd() {
+      const div = L.DomUtil.create('div', 'quick-actions');
+      div.innerHTML = `
+        <button type="button" id="quick-undo" title="Laatste wijziging ongedaan maken">↶ <span>Ongedaan</span></button>
+        <button type="button" id="quick-loop" title="Route terug naar het startpunt laten lopen">↺ <span>Lus</span></button>
+        <button type="button" id="quick-clear" title="Hele route wissen (ongedaan maken kan)">✕ <span>Wissen</span></button>`;
+      L.DomEvent.disableClickPropagation(div);
+      L.DomEvent.disableScrollPropagation(div);
+      return div;
+    },
+  });
+  new QuickControl().addTo(map);
 
   const routeLayer = L.layerGroup().addTo(map);
   const markerLayer = L.layerGroup().addTo(map);
@@ -285,10 +386,11 @@
     else if (n === 1) setStatus('Klik op een volgend punt om de route te tekenen.');
     else setStatus(`${n} punten. Sleep punten om de route aan te passen.`);
 
-    $('btn-undo').disabled = !state.history.length;
+    $('btn-undo').disabled = $('quick-undo').disabled = !state.history.length;
     const hasRoute = n > 1;
     ['btn-reverse', 'btn-loop', 'btn-gpx', 'btn-gmaps'].forEach((id) => ($(id).disabled = !hasRoute));
-    $('btn-clear').disabled = n === 0;
+    $('btn-clear').disabled = $('quick-clear').disabled = n === 0;
+    $('quick-loop').disabled = !hasRoute;
   }
 
   // ---------- Opslaan ----------
@@ -348,22 +450,30 @@
     changed();
   });
 
-  $('btn-undo').addEventListener('click', undo);
-  $('btn-clear').addEventListener('click', () => {
+  function clearRoute() {
     if (!state.waypoints.length) return;
     snapshot();
     state.waypoints = [];
     changed();
-  });
-  $('btn-reverse').addEventListener('click', () => {
-    snapshot();
-    state.waypoints.reverse();
-    changed();
-  });
-  $('btn-loop').addEventListener('click', () => {
+    setStatus('Route gewist. Tik op Ongedaan om hem terug te halen.');
+  }
+
+  function closeLoop() {
     if (state.waypoints.length < 2) return;
     snapshot();
     state.waypoints.push({ ...state.waypoints[0] });
+    changed();
+  }
+
+  $('btn-undo').addEventListener('click', undo);
+  $('quick-undo').addEventListener('click', undo);
+  $('btn-clear').addEventListener('click', clearRoute);
+  $('quick-clear').addEventListener('click', clearRoute);
+  $('btn-loop').addEventListener('click', closeLoop);
+  $('quick-loop').addEventListener('click', closeLoop);
+  $('btn-reverse').addEventListener('click', () => {
+    snapshot();
+    state.waypoints.reverse();
     changed();
   });
 
